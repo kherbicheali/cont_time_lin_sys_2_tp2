@@ -1,0 +1,63 @@
+\chapter{\textsc{Mise en place d'un retour d'état}}
+\addcontentsline{toc}{chapter}{\textsc{Mise en place d'un retour d'état}}
+
+	\section{\textsc{Annulation de l'erreur de position}}
+	
+	\par Pour un système SISO (une entrée/une sortie) les pôles permettent de régler la dynamique du système, c’est-à-dire, le régime transitoire. Par contre, cette technique ne permet pas de régler le problème de la précision. Nous ne pouvons pas choisir le régime permanent du système en boucle fermée par le choix de K. Nous proposons une première structure de commande permettant d’assurer une erreur de position nulle en régime permanent tel que \cite{ref1} :
+	
+	\begin{center}
+	$u(t) = -Kx(t) + Ny_{ref}(t)$ 
+	\end{center}		
+
+	Où le pré-compensateur $N$ est un gain matriciel permettant de régler le gain statique du système en boucle fermée, avec:
+	
+	\begin{center}
+	$N = \frac{1}{C(BK-A)^{-1}B}$ 
+	\end{center}	
+%\par Avec MATLAB\label{section 3.3} \hyperref[Annexe A]{voir Annexe A}, on a trouvé: $N= 1.389$.
+
+	\section{ \textsc{Calcul des paramètres du retour d'état $K$ et $N$}}
+	
+\par Ce système est réalisé selon la loi de commande par retour d'état $v_m(t)=NK_e\theta_r(t)-Kx(t)=Nv_r(t)-Kx(t)$, avec $K=\begin{bmatrix}k_1 && k_2\end{bmatrix}$\\
+\par Nous avons déterminé l'expression du modèle du système asservi par le retour d'état mentionné plus haut en fonction de K et N. On a tout d'abord :\\
+~~\\
+$\dot{x}=Ax+Bv_m \\ y=Cx+Dv_m$\\
+\par On remplace $v_m$ :\\
+$\dot{x}=Ax+B[Nv_r-Kx] \\ y=Cx+D[Nv_r-Kx]$\\
+\par On distribue :\\
+$\dot{x}=Ax+BNv_r-BKx \\ y=Cx+DNv_r-DKx$\\
+\par Et on factorise :\\
+$\dot{x}=(A-BK)x+BNv_r \\ y=(C-DK)x+DNv_r$\\
+\par Ce qui nous donne comme expression de nos matrice :\\
+$$A_{bf}=\begin{bmatrix}A-BF\end{bmatrix} ; B_{bf}=\begin{bmatrix}BN\end{bmatrix} ; C_{bf}=\begin{bmatrix}C-DF\end{bmatrix} ; D_{bf}=0$$
+\par En remplaçant A, B et F dans la matrice $A_{bf}$, cela nous donne :
+$$A_{bf}=A_{bf}=\begin{bmatrix}0 && \frac{K_s}{9K_g} \\ 0 && -\frac{1}{T_m}\end{bmatrix}-\begin{bmatrix}0 \\ \frac{K_mK_g}{T_m}\end{bmatrix}\begin{bmatrix}k_1 && k_2\end{bmatrix}$$
+\par D'où $$A_{bf}=\begin{bmatrix}0 && \frac{K_s}{9K_g} \\ -\frac{K_mK_gk_1}{T_m} && -\frac{1}{T_m}-\frac{K_gK_mk_2}{T_m}\end{bmatrix}$$\\
+\par Comme nous avons vu précédement, le système $S_{v_m->v_s}$ est commandable en (A,B). On peut donc placer les valeurs propres de la matrice $A_{bf}$ en $v_1$ et $v_2$.
+\par Nous avons ensuite chercher la valeur de K, tel que les valeurs propres du système asservi soient $v_1$ et $v_2$. On sait que : det$(\lambda I-A{bf})$=$(p-v_1)(p-v_2)$. Nous avons donc d'abord chercher le detéminant :
+$$det(\begin{bmatrix}\lambda && 0 \\ 0 && \lambda\end{bmatrix}-\begin{bmatrix}0 && \frac{K_s}{9K_g} \\ -\frac{K_gK_mk_1}{T_m} && -\frac{1}{T_m}-\frac{K_gK_mk_2}{T_m}\end{bmatrix})=det \begin{bmatrix}\lambda && -\frac{K_s}{9K_g} \\ -\frac{K_gK_mk_1}{T_m} && \lambda+\frac{1}{T_m}+\frac{K_gK_mk_2}{T_m}\end{bmatrix}$$
+\par Ce qui nous donne :
+$$\lambda^2+[\lambda(\frac{1+K_gK_mk_2}{T_m})]-[\frac{K_gK_mk_2}{T_m}\frac{-K_s}{9K_g}]$$
+\par Après développement on a :
+$$\lambda^2+\frac{1}{T_m}\lambda+\frac{K_gK_mk_2}{T_m}\lambda+\frac{K_mK_sk_1}{9T_m}$$
+%\par On simplifie et on numérise, c'est à dire on remplace par leurs valeurs :
+%$$\lambda^2+(\frac{1}{0.26}+\frac{0.105*8}{0.26}k_2)\lambda+\frac{8*10}{9*0.26}k_1=(p-v_1)(p-v_2)$$
+\par On a aussi : 
+$$(\lambda-v_1)(\lambda-v_2)=(\lambda+2.4-5.5j)(\lambda+2.4+5.5j)$$
+%\par Ce qui donne :
+%$$p^2+2.4p+5.5jp+2.4p+5.76+13.2j-5.5jp-13.2j+30.25=p^2+4.8p+36.01$$
+\par On identifie ensuite avec l'équation du déterminant,\label{K} \hyperref[annexe B]{Voir annexe B :}\\
+
+\begin{center}
+
+\fbox{$K=\begin{bmatrix}k_1&&k_2\end{bmatrix}=\begin{bmatrix}1.0533&&0.2362\end{bmatrix}$}
+
+\end{center}
+
+\par Ensuite il ne reste qu'à déterminer la valeur du pré-compensteur $N$, \label{N} \hyperref[Annexe C]{Voir annexe C :}
+\begin{center}
+
+\fbox{$N= 1.0533$}
+
+\end{center}
+
